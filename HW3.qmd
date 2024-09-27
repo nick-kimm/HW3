@@ -1,0 +1,15 @@
+---
+title: "HW3"
+author: "Nick Kim"
+format: html
+---
+
+Link to my [github](https://github.com/nick-kimm/HW3) reposititory 
+
+## Problem 1
+
+Installing "nice table" packages
+```{r}
+install.packages("stargazer")
+```
+
