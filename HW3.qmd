@@ -44,23 +44,33 @@ data<-data[is.na(data$RIDAGEMN)!=TRUE,]
 #everyone aged 0-9
 a1 <-data[(data$RIDAGEMN/12)<10,]
 #everyone aged 10-19
-a2 <-data[(data$RIDAGEMN/12)<20,]
+a2 <-data[((data$RIDAGEMN/12)<20&(data$RIDAGEMN/12)>10),]
 #everyone aged 20-29
-a3 <-data[(data$RIDAGEMN/12)<30,]
+a3 <-data[((data$RIDAGEMN/12)<30&(data$RIDAGEMN/12)>20),]
 #everyone aged 30-39
-a4 <-data[(data$RIDAGEMN/12)<40,]
+a4 <-data[((data$RIDAGEMN/12)<40&(data$RIDAGEMN/12)>30),]
 #everyone aged 40-49
-a5 <-data[(data$RIDAGEMN/12)<50,]
+a5 <-data[((data$RIDAGEMN/12)<50&(data$RIDAGEMN/12)>40),]
 #everyone aged 50-59
-a6 <-data[(data$RIDAGEMN/12)<60,]
+a6 <-data[((data$RIDAGEMN/12)<60&(data$RIDAGEMN/12)>50),]
 #everyone aged 60-69
-a7 <-data[(data$RIDAGEMN/12)<70,]
+a7 <-data[((data$RIDAGEMN/12)<70&(data$RIDAGEMN/12)>60),]
 #everyone aged 70-79
-a8 <-data[(data$RIDAGEMN/12)<80,]
+a8 <-data[((data$RIDAGEMN/12)<80&(data$RIDAGEMN/12)>70),]
 #everyone aged 80-89
-a9 <-data[(data$RIDAGEMN/12)<30,]
+a9 <-data[((data$RIDAGEMN/12)<90&(data$RIDAGEMN/12)>80),]
 ```
 
+```{r}
+ages <- vector(length=9)
+
+for (i in 1:9){
+  ages[i] <- nrow(data[((data$RIDAGEMN/12)<(i*10)&(data$RIDAGEMN/12)>((i-1)*10)),])
+}
+  
+print(ages)
+print(c(nrow(a1),nrow(a2),nrow(a3),nrow(a4),nrow(a5),nrow(a6),nrow(a7),nrow(a8),nrow(a9)))
+```
 
 Defining a helper function
 ```{r}
