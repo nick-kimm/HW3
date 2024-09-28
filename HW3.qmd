@@ -4,7 +4,7 @@ author: "Nick Kim"
 format: html
 ---
 
-Link to my [github](https://github.com/nick-kimm/HW3) reposititory 
+Link to my [github](https://github.com/nick-kimm/HW3) repository 
 
 ## Problem 1
 
@@ -15,10 +15,55 @@ install.packages("stargazer")
 #Part a: 
 Reading Data Files 
 ```{r}
-library(DBI) 
-library(RSQLite)
+library(haven)
+
+v_file <- "/Users/nicholaskim/Documents/STAT 506/HW3/VIX_D.XPT"
+vision <- read_xpt(v_file)
+
+d_file <- "/Users/nicholaskim/Documents/STAT 506/HW3/DEMO_D.XPT"
+demo <- read_xpt(d_file)
+```
+
+Merging into one dataframe:
+```{r}
+data<-merge(vision,demo)
+#Checking if its a data frame
+print(is.data.frame(data))
+#Showing it reduced the size of the dataframe to only that matched
+print(c(nrow(demo),nrow(data)))
+```
+
+#Part b:
+Proportion of respondents in each 10 year bands. From the DEMO doc we know all possible range of values is 0-84 yrs
+```{r}
 library(stargazer)
 
+#remove all rows where there is no age recorded:
+data<-data[is.na(data$RIDAGEMN)!=TRUE,]
+
+#everyone aged 0-9
+a1 <-data[(data$RIDAGEMN/12)<10,]
+#everyone aged 10-19
+a2 <-data[(data$RIDAGEMN/12)<20,]
+#everyone aged 20-29
+a3 <-data[(data$RIDAGEMN/12)<30,]
+#everyone aged 30-39
+a4 <-data[(data$RIDAGEMN/12)<40,]
+#everyone aged 40-49
+a5 <-data[(data$RIDAGEMN/12)<50,]
+#everyone aged 50-59
+a6 <-data[(data$RIDAGEMN/12)<60,]
+#everyone aged 60-69
+a7 <-data[(data$RIDAGEMN/12)<70,]
+#everyone aged 70-79
+a8 <-data[(data$RIDAGEMN/12)<80,]
+#everyone aged 80-89
+a9 <-data[(data$RIDAGEMN/12)<30,]
+```
+
+
+Defining a helper function
+```{r}
 #' db function
 #'This function will shorten the function name we will call when using dbConnect for ease of use for the user
 #' @param connection 
@@ -28,7 +73,4 @@ library(stargazer)
 gg <- function(connection,query){
   dbGetQuery(connection,query)
 }
-
-vision = dbConnect(RSQLite::SQLite(), "/Users/nicholaskim/Documents/STAT 506/HW3/VIX_D.XPT",`synchronous` = NULL)
-demo = dbConnect(RSQLite::SQLite(),"/Users/nicholaskim/Documents/STAT 506/HW3/DEMO_D.XPT",`synchronous` = NULL)
 ```
