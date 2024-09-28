@@ -8,10 +8,6 @@ Link to my [github](https://github.com/nick-kimm/HW3) repository
 
 ## Problem 1
 
-Installing "nice table" packages
-```{r}
-install.packages("stargazer")
-```
 #Part a: 
 Reading Data Files 
 ```{r}
@@ -36,41 +32,36 @@ print(c(nrow(demo),nrow(data)))
 #Part b:
 Proportion of respondents in each 10 year bands. From the DEMO doc we know all possible range of values is 0-84 yrs
 ```{r}
-library(stargazer)
-
 #remove all rows where there is no age recorded:
 data<-data[is.na(data$RIDAGEMN)!=TRUE,]
 
-#everyone aged 0-9
-a1 <-data[(data$RIDAGEMN/12)<10,]
-#everyone aged 10-19
-a2 <-data[((data$RIDAGEMN/12)<20&(data$RIDAGEMN/12)>10),]
-#everyone aged 20-29
-a3 <-data[((data$RIDAGEMN/12)<30&(data$RIDAGEMN/12)>20),]
-#everyone aged 30-39
-a4 <-data[((data$RIDAGEMN/12)<40&(data$RIDAGEMN/12)>30),]
-#everyone aged 40-49
-a5 <-data[((data$RIDAGEMN/12)<50&(data$RIDAGEMN/12)>40),]
-#everyone aged 50-59
-a6 <-data[((data$RIDAGEMN/12)<60&(data$RIDAGEMN/12)>50),]
-#everyone aged 60-69
-a7 <-data[((data$RIDAGEMN/12)<70&(data$RIDAGEMN/12)>60),]
-#everyone aged 70-79
-a8 <-data[((data$RIDAGEMN/12)<80&(data$RIDAGEMN/12)>70),]
-#everyone aged 80-89
-a9 <-data[((data$RIDAGEMN/12)<90&(data$RIDAGEMN/12)>80),]
-```
-
-```{r}
+#this will store the proportion of individuals in each 10 year band into one vector
 ages <- vector(length=9)
 
 for (i in 1:9){
-  ages[i] <- nrow(data[((data$RIDAGEMN/12)<(i*10)&(data$RIDAGEMN/12)>((i-1)*10)),])
+  ages[i] <- (nrow(data[((data$RIDAGEMN/12)<(i*10)&(data$RIDAGEMN/12)>((i-1)*10)),])/nrow(data))*100
 }
-  
-print(ages)
-print(c(nrow(a1),nrow(a2),nrow(a3),nrow(a4),nrow(a5),nrow(a6),nrow(a7),nrow(a8),nrow(a9)))
 ```
+
+```{r}
+library(knitr)
+library(kableExtra)
+
+prop<-data.frame(t(ages))
+colnames(prop)<-c("0-9","10-19","20-29","30-39","40-49","50-59","60-69","70-79","80-89")
+
+prop%>%
+  kbl(caption = "Percentage of Respondents Who Wear Glasses/Contacts in 10 yr Bands")%>%
+  kable_paper()%>%
+  add_header_above(c("Ages"=9))
+```
+
+#Part c:
+Fitting logisitc regression models
+```{r}
+
+```
+
 
 Defining a helper function
 ```{r}
