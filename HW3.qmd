@@ -12,4 +12,23 @@ Installing "nice table" packages
 ```{r}
 install.packages("stargazer")
 ```
+#Part a: 
+Reading Data Files 
+```{r}
+library(DBI) 
+library(RSQLite)
+library(stargazer)
 
+#' db function
+#'This function will shorten the function name we will call when using dbConnect for ease of use for the user
+#' @param connection 
+#' @param query 
+#'
+#' @return output from dbConnect function
+gg <- function(connection,query){
+  dbGetQuery(connection,query)
+}
+
+vision = dbConnect(RSQLite::SQLite(), "/Users/nicholaskim/Documents/STAT 506/HW3/VIX_D.XPT",`synchronous` = NULL)
+demo = dbConnect(RSQLite::SQLite(),"/Users/nicholaskim/Documents/STAT 506/HW3/DEMO_D.XPT",`synchronous` = NULL)
+```
