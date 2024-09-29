@@ -114,7 +114,7 @@ mod2_values <- c(round(unname(mod2$coefficients),4),"-",
                  round(1-(summary(mod2)$deviance/summary(mod2)$null.deviance),2),
                  round(summary(mod2)$aic,2))
 mod3_values <- c(round(unname(mod3$coefficients),4),
-                 round(nobs(mod3),1),
+                 nobs(mod3),
                  round(1-(summary(mod3)$deviance/summary(mod3)$null.deviance),2),
                  round(summary(mod3)$aic,2))
 
@@ -125,6 +125,30 @@ summary_t%>%
   kable_paper()%>%
   kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
+
+#Part d: 
+
+Test for whether the odds in vision between genders differs. This is found in our summary table, but specifically the line for our variable RIAGENDR or Gender. 
+```{r}
+summary(mod3)
+```
+From above we can see that the p-value of our variable RIAGENDR is less than our critical value of 0.05. This means there is enough evidence to say that there is a statistically significant difference in vision between men and women. 
+
+Test whether the proportion of gender for vision differs. 
+
+First creating a table of gender and vision. This will count how many individuals are Male (1) who wear Glasses/Contacts and don't, and same for Female (2)
+```{r}
+gen_vis<-table(mdata$RIAGENDR,mdata$VIQ220)
+gen_vis
+```
+Running a Chi-squared test
+```{r}
+chisq.test(gen_vis)
+```
+From the output above we can see that the p-value is less than our critical value of 0.05. This means that there is enough evidence to say that there is a significant different in the proportion of genders. 
+
+##Question 2:
+
 
 Defining a helper function
 ```{r}
