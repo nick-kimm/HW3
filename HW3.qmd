@@ -35,31 +35,47 @@ Proportion of respondents in each 10 year bands. From the DEMO doc we know all p
 #remove all rows where there is no age recorded:
 data<-data[is.na(data$RIDAGEMN)!=TRUE,]
 
-#this will store the proportion of individuals in each 10 year band into one vector
-ages <- vector(length=9)
+#remove all rows where there is NA or 9 (don't know) for if the respondent wears glasses/contacts
+data<-data[is.na(data$VIQ220)!=TRUE & data$VIQ220!=9,]
+
+#this will store the total count of individuals in each 10 year band into one vector
+tages <- vector(length=9)
+#this will store the total count of individuals who wear either glasses or contacts
+gccount <- vector(length=9)
+#this will store the percentage that wear glasses or contacts in there respective age group
+pgc <- vector(length=9)
 
 for (i in 1:9){
-  ages[i] <- (nrow(data[((data$RIDAGEMN/12)<(i*10)&(data$RIDAGEMN/12)>((i-1)*10)),])/nrow(data))*100
+  tages[i] <- nrow(data[((data$RIDAGEMN/12)<(i*10)&(data$RIDAGEMN/12)>((i-1)*10)),])
+  gccount[i] <- nrow(data[data$VIQ220==1&((data$RIDAGEMN/12)<(i*10)&(data$RIDAGEMN/12)>((i-1)*10)),])
+  pgc[i] <- (gccount[i]/tages[i])*100
 }
 ```
+
+
 
 ```{r}
 library(knitr)
 library(kableExtra)
 
-prop<-data.frame(t(ages))
+prop<-t(data.frame("Num Wears Glasses/Contacts"=format(round(gccount, 0), nsmall = 0),"Total in Age Group"=format(round(tages, 0), nsmall = 0),"Per Who Wear Glasses/Contacts"=format(round(pgc, 2), nsmall = 2)))
+
 colnames(prop)<-c("0-9","10-19","20-29","30-39","40-49","50-59","60-69","70-79","80-89")
 
 prop%>%
   kbl(caption = "Percentage of Respondents Who Wear Glasses/Contacts in 10 yr Bands")%>%
   kable_paper()%>%
-  add_header_above(c("Ages"=9))
+  add_header_above(c("Ages"=10))%>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
 ```
 
-#Part c:
-Fitting logisitc regression models
-```{r}
 
+#Part c:
+Fitting logistic regression models:
+
+Model 1 w/ just age as predictor
+```{r}
+lm()
 ```
 
 
