@@ -22,21 +22,21 @@ demo <- read_xpt(d_file)
 
 Merging into one dataframe:
 ```{r}
-data<-merge(vision,demo)
+mdata<-merge(vision,demo)
 #Checking if its a data frame
-print(is.data.frame(data))
+print(is.data.frame(mdata))
 #Showing it reduced the size of the dataframe to only that matched
-print(c(nrow(demo),nrow(data)))
+print(c(nrow(demo),nrow(mdata)))
 ```
 
 #Part b:
 Proportion of respondents in each 10 year bands. From the DEMO doc we know all possible range of values is 0-84 yrs
 ```{r}
 #remove all rows where there is no age recorded:
-data<-data[is.na(data$RIDAGEMN)!=TRUE,]
+mdata<-mdata[is.na(mdata$RIDAGEMN)!=TRUE,]
 
 #remove all rows where there is NA or 9 (don't know) for if the respondent wears glasses/contacts
-data<-data[is.na(data$VIQ220)!=TRUE & data$VIQ220!=9,]
+mdata<-mdata[is.na(mdata$VIQ220)!=TRUE & mdata$VIQ220!=9,]
 
 #this will store the total count of individuals in each 10 year band into one vector
 tages <- vector(length=9)
@@ -46,8 +46,8 @@ gccount <- vector(length=9)
 pgc <- vector(length=9)
 
 for (i in 1:9){
-  tages[i] <- nrow(data[((data$RIDAGEMN/12)<(i*10)&(data$RIDAGEMN/12)>((i-1)*10)),])
-  gccount[i] <- nrow(data[data$VIQ220==1&((data$RIDAGEMN/12)<(i*10)&(data$RIDAGEMN/12)>((i-1)*10)),])
+  tages[i] <- nrow(mdata[((mdata$RIDAGEMN/12)<(i*10)&(mdata$RIDAGEMN/12)>((i-1)*10)),])
+  gccount[i] <- nrow(mdata[mdata$VIQ220==1&((mdata$RIDAGEMN/12)<(i*10)&(mdata$RIDAGEMN/12)>((i-1)*10)),])
   pgc[i] <- (gccount[i]/tages[i])*100
 }
 ```
@@ -73,11 +73,58 @@ prop%>%
 #Part c:
 Fitting logistic regression models:
 
-Model 1 w/ just age as predictor
+Model 1:
+Just Age as predictor
+
+First we'll be changing the value of VIQ220 (whether they wear glasses/contacts) to a bionomial variable since GLM requires it to be in between the values of 0 to 1.
 ```{r}
-lm()
+mdata$VIQ220 <- ifelse(mdata$VIQ220==2,0,1)
 ```
 
+Running the Logistic Regression Model
+```{r}
+mod1<-glm(VIQ220~RIDAGEMN,data=mdata,family=binomial)
+summary(mod1)
+```
+
+Model 2:
+Age, Race, and Gender as predictor variables
+```{r}
+mod2<-glm(VIQ220~RIDAGEMN+RIDRETH1+RIAGENDR,data=mdata,family=binomial)
+summary(mod2)
+```
+
+Model 3:
+Age, Race, Gender, and Poverty Income Ratio as predictor variables
+```{r}
+mod3<-glm(VIQ220~RIDAGEMN+RIDRETH1+RIAGENDR+INDFMPIR,data=mdata,family=binomial)
+summary(mod3)
+```
+Creating one table output
+
+Storing all values for each model in separate vectors to try and create a similar output as in stargazer package. First couple of values will be the coefficients and if there are missing values will store as "-". Followed by sample size and the calculated Pseudo R^2: 1-(null deviance/residual deviance) and lastly AIC
+```{r}
+#all model 1 values
+mod1_values <- c(round(unname(mod1$coefficients),4),"-","-","-",
+                 nobs(mod1),
+                 round(1-(summary(mod1)$deviance/summary(mod1)$null.deviance),2),
+                 round(summary(mod1)$aic,2))
+mod2_values <- c(round(unname(mod2$coefficients),4),"-",
+                 nobs(mod2),
+                 round(1-(summary(mod2)$deviance/summary(mod2)$null.deviance),2),
+                 round(summary(mod2)$aic,2))
+mod3_values <- c(round(unname(mod3$coefficients),4),
+                 round(nobs(mod3),1),
+                 round(1-(summary(mod3)$deviance/summary(mod3)$null.deviance),2),
+                 round(summary(mod3)$aic,2))
+
+summary_t<-data.frame("Model 1"=mod1_values,"Model 2"=mod2_values,"Model 3"=mod3_values)
+rownames(summary_t)<-c("Intercept","Age","Race","Gender","PIC","Sample Size","Pseduo-R^2","AIC")
+summary_t%>%
+  kbl(caption = "Summary Table for Each Model")%>%
+  kable_paper()%>%
+  kable_styling(bootstrap_options = c("striped", "hover", "condensed"))
+```
 
 Defining a helper function
 ```{r}
