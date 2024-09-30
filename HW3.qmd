@@ -283,3 +283,17 @@ gg(movies,"
 ```
 From the above data frame we can see that we got the same answer as before where Argentina and Nigeria are the two countries where the number of customers is eaxtly equal to 13
 
+##Question 3:
+
+Downloading data
+```{r}
+emails<-read.csv("/Users/nicholaskim/Documents/STAT 506/HW3/us-500.csv")
+```
+
+
+
+
+
+
+
+
