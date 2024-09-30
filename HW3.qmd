@@ -260,7 +260,26 @@ From the data frame above we can see that the countries where the number of cust
 
 Using only SQL:
 ```{r}
+gg(movies,"
+   SELECT cou.country, count(cus.customer_id) AS count
+    FROM country AS cou
+   RIGHT JOIN(
+      SELECT city_id,country_id
+        FROM city
+   ) AS ci ON ci.country_id = cou.country_id
+   RIGHT JOIN(
+      SELECT address_id, city_id
+        FROM address
+   ) AS ad ON ad.city_id = ci.city_id
+   RIGHT JOIN(
+      SELECT *
+        FROM customer
+   ) AS cus ON cus.address_id = ad.address_id
+   GROUP BY cou.country
+   HAVING count = 13
+   ")
+
 
 ```
-
+From the above data frame we can see that we got the same answer as before where Argentina and Nigeria are the two countries where the number of customers is eaxtly equal to 13
 
