@@ -224,7 +224,43 @@ gg(movies,"
 ```
 From the SQL table above we can see that the result is the same as before
 
+#Part c:
+Identify which country or countries have exactly 13 customers.
+
+Using data.frame operations after pulling required tables using SQL:
+```{r}
+countries<-gg(movies,"
+   SELECT country_id, country
+   FROM country
+   ")
+
+cust<-gg(movies,"
+   SELECT customer_id, store_id, address_id
+   FROM customer
+   ")
+
+address<-gg(movies,"
+   SELECT address_id, city_id
+   FROM address
+   ")
+
+city<-gg(movies,"
+   SELECT city_id,country_id
+   FROM city
+   ")
+
+mcust<-merge(cust,address,by="address_id")
+mcust2<-merge(mcust,city,by="city_id")
+mcust3<-merge(mcust2,countries,by="country_id")
+ct_by_country<-as.data.frame(table(mcust3$country))
+ct_by_country[ct_by_country$Freq==13,]
+```
+From the data frame above we can see that the countries where the number of customers is exactly equal to 13 is Argentina and Nigeria
 
 
+Using only SQL:
+```{r}
+
+```
 
 
